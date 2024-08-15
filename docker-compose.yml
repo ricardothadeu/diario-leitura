@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+  db:
+    restart: always
+    image: postgres:alpine
+    user: postgres
+    ports: 
+      - "5432:5432"
+    container_name: "postgres-diario"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - rede-diario-leitura
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_DIALECT=postgres
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
+    depends_on:
+      - db
+    networks:
+      - rede-diario-leitura
+      
+networks:
+  rede-diario-leitura:
+
+volumes:
+  postgres-data:
