@@ -1,5 +1,7 @@
 # diario-leitura
 
+Atividade por: Arthur Azeredo, Ricardo Matos
+
 Usuário pode criar seu diário de leitura, colocando informações como
 * titulo do livro
 * nome do autor
