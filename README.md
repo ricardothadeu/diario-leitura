@@ -12,4 +12,4 @@ Usuário pode criar seu diário de leitura, colocando informações como
 * Dar uma nota para o livro, de 0 a 5
 
   após rodar o comando docker-compose up -d
-  o usuário pode acessar o app através do endereço http://localhost:3000/html/index.html
+  o usuário pode acessar o app através do endereço http://localhost:3000/
