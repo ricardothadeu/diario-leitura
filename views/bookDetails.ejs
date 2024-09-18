@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Livro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script>
+        function confirmDelete(event) {
+            if (!confirm('Você tem certeza de que deseja excluir este livro?')) {
+                event.preventDefault();
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Detalhes do Livro</h1>
+
+    <div>
+        <p><strong>Título:</strong> <%= livro.titulo %></p>
+        <p><strong>Autor:</strong> <%= livro.autor %></p>
+        <p><strong>Número de Páginas:</strong> <%= livro.numeroPaginas %></p>
+        <p><strong>Data de Início:</strong> <%= livro.dataInicio ? livro.dataInicio.toISOString().split('T')[0] : 'N/A' %></p>
+        <p><strong>Data de Término:</strong> <%= livro.dataTermino ? livro.dataTermino.toISOString().split('T')[0] : 'N/A' %></p>
+        <p><strong>Nota:</strong> <%= livro.nota %></p>
+        <p><strong>Comentários:</strong> <%= livro.comentarios || 'Nenhum comentário' %></p>
+    </div>
+
+    <div>
+        <button onclick="window.location.href='/livros'">Voltar</button>
+        <button onclick="window.location.href='/livros/<%= livro.id %>/editBook'">Editar</button>
+        <form action="/livros/<%= livro.id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="confirmDelete(event)">
+            <button type="submit">Excluir</button>
+        </form>
+    </div>
+</body>
+</html>

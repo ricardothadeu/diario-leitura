@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Livros</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <h1>Lista de Livros</h1>
+
+    <button onclick="window.location.href='/livros/addBook'">Adicionar Livro</button>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Paginas</th>
+                <th>Nota</th>
+                <th>Data de Término</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (livros.length > 0) { %>
+                <% livros.forEach((livro, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td> 
+                        <td><a href="/livros/<%= livro.id %>"><%= livro.titulo %></a></td> 
+                        <td><%= livro.autor %></td>
+                        <td><%= livro.numeroPaginas || 'N/A' %></td>
+                        <td><%= livro.nota || 'N/A' %></td>
+                        <td><%= livro.dataTermino ? livro.dataTermino.toISOString().split('T')[0] : 'N/A' %></td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="6">Nenhum livro encontrado</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,13 +1,20 @@
 const express = require('express');
 const sequelize = require('./config/database');
+const methodOverride = require('method-override');
+
 
 const app = express();
 const port = 3000;
 
 const path = require('path');
 
-// Servir arquivos estáticos
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));  // Isso permite usar _method para sobrepor métodos POST com PUT ou DELETE
+app.use(express.urlencoded({ extended: true }));
+
 
 // Testando a conexão
 sequelize.authenticate()
@@ -33,42 +40,54 @@ sequelize.sync()
         console.error('Erro ao sincronizar os modelos:', err);
     });
 
-app.use(express.json()); // Middleware para parsear JSON no corpo das requisições
+app.use(express.json());
+
+//Lista todos os livros
+app.get('/', (req, res) => {
+    res.redirect('/livros'); 
+});
 
 // Criar um novo livro
 app.post('/livros', async (req, res) => {
     try {
         const livro = await Livro.create(req.body);
-        res.status(201).json(livro);
+        res.redirect('/livros');  
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
+// Exibir o formulário para adicionar um livro
+app.get('/livros/addBook', (req, res) => {
+    res.render('addBook'); 
+});
+
+
 // Listar todos os livros
 app.get('/livros', async (req, res) => {
     try {
-        const livros = await Livro.findAll();
-        res.status(200).json(livros);
+        const livros = await Livro.findAll(); 
+        res.render('livros', { livros }); 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Erro ao carregar a lista de livros:', error);
+        res.status(500).json({ error: 'Erro ao carregar a lista de livros.' });
     }
 });
+
 
 // Obter um livro específico
 app.get('/livros/:id', async (req, res) => {
     try {
         const livro = await Livro.findByPk(req.params.id);
         if (livro) {
-            res.status(200).json(livro);
+            res.render('bookDetails', { livro });
         } else {
-            res.status(404).json({ error: 'Livro não encontrado' });
+            res.status(404).send('Livro não encontrado');
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).send('Erro ao buscar o livro');
     }
 });
-
 // Atualizar um livro
 app.put('/livros/:id', async (req, res) => {
     try {
@@ -77,12 +96,26 @@ app.put('/livros/:id', async (req, res) => {
         });
         if (updated) {
             const updatedLivro = await Livro.findByPk(req.params.id);
-            res.status(200).json(updatedLivro);
+            res.redirect(`/livros/${updatedLivro.id}`);
         } else {
             res.status(404).json({ error: 'Livro não encontrado' });
         }
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+});
+
+// Exibir o formulário de edição de livro
+app.get('/livros/:id/editBook', async (req, res) => {
+    try {
+        const livro = await Livro.findByPk(req.params.id);
+        if (livro) {
+            res.render('editBook', { livro });
+        } else {
+            res.status(404).send('Livro não encontrado');
+        }
+    } catch (error) {
+        res.status(500).send('Erro ao buscar livro');
     }
 });
 
@@ -93,7 +126,7 @@ app.delete('/livros/:id', async (req, res) => {
             where: { id: req.params.id }
         });
         if (deleted) {
-            res.status(204).send(); // No content
+            res.redirect('/livros');
         } else {
             res.status(404).json({ error: 'Livro não encontrado' });
         }
